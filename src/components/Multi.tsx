@@ -54,12 +54,12 @@ export const Multi = ({ progress, onExit }: MultiProps) => {
                                 setTask(getRandomTask(current))
                                 setAnswer('?')
                                 setCorrectness('warning')
-                            }, 1000)
+                            }, 2000)
                         } else {
                             setTimeout(() => {
                                 setAnswer('?')
                                 setCorrectness('warning')
-                            }, 1000)
+                            }, 500)
                         }
                     }}
                 />

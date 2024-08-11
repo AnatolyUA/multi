@@ -44,7 +44,7 @@ function getOptions(task: Task): number[] {
     const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
 
     // Add random options until we have 8
-    while (set.size < 8) {
+    while (set.size < 9) {
         let randomOption
         if (Math.random() < 0.5) {
             // 50% chance: number close to correct answer

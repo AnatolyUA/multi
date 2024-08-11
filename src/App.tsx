@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { storage } from './storage.ts'
 import { normalizeName, Progress } from './progress.ts'
@@ -10,6 +10,14 @@ function App() {
     const [progress, setProgress] = useState(current)
     const [name, setName] = useState(current?.Name || '')
 
+    useEffect(() => {
+        if (progress) {
+            document.title = progress.Name
+        } else {
+            document.title = 'Inako-Fed'
+        }
+    }, [progress])
+
     return (
         <>
             {!progress && (
@@ -17,6 +25,10 @@ function App() {
                     value={name}
                     onChange={setName}
                     onEnter={() => {
+                        if (!name) {
+                            alert('Please enter your name')
+                            return
+                        }
                         const restored =
                             storage.getItem<Progress>(normalizeName(name)) ||
                             ({
