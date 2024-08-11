@@ -17,7 +17,11 @@ function App() {
                     value={name}
                     onChange={setName}
                     onEnter={() => {
-                        const restored = storage.getItem<Progress>(normalizeName(name)) || { Name: name, Level: 3 }
+                        const restored =
+                            storage.getItem<Progress>(normalizeName(name)) ||
+                            ({
+                                Name: name
+                            } as Progress)
                         setProgress(restored)
                     }}
                 />
