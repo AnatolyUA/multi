@@ -3,12 +3,15 @@ import { getRandomTask, normalizeName, populateStats, Progress, updateLevel, upd
 import { useStateWithStorage } from '../hooks/use-state-with-storage.ts'
 import { useEffect, useState } from 'react'
 import { Options } from './Options.tsx'
+import { Statistics } from './Statistics.tsx'
 
 type MultiProps = {
     progress: Progress
     onExit: () => void
 }
 export const Multi = ({ progress, onExit }: MultiProps) => {
+    const [showStats, setShowStats] = useState(false)
+
     if (!progress.Stats) {
         progress = populateStats(progress)
     }
@@ -26,9 +29,13 @@ export const Multi = ({ progress, onExit }: MultiProps) => {
 
     return (
         <div>
+            {showStats && <Statistics onClose={() => setShowStats(false)} progress={current} />}
             <h4>Welcome {current.Name}</h4>
             <div className={'mono task'}>
-                {task[0]} x {task[1]} = <span className={correctness}>{answer}</span>
+                {task[0]} x {task[1]} ={' '}
+                <span style={{ display: 'inline-block', width: '1.5em' }} className={correctness}>
+                    {answer}
+                </span>
             </div>
             <div>
                 <Options
@@ -36,8 +43,8 @@ export const Multi = ({ progress, onExit }: MultiProps) => {
                     state={correctness}
                     onAnswer={(answer) => {
                         const newState = updateStats(current, task, answer, new Date().getTime() - time.getTime())
-                        console.log('newState', newState.Stats.slice(0, 10))
                         setCurrent(newState)
+
                         setAnswer(answer.toString())
                         const correct = answer === task[0] * task[1] ? 'success' : 'error'
                         setCorrectness(correct)
@@ -66,6 +73,14 @@ export const Multi = ({ progress, onExit }: MultiProps) => {
                 style={{ position: 'absolute', bottom: 10, left: 10 }}
             >
                 Exit
+            </button>
+            <button
+                onClick={() => {
+                    setShowStats(!showStats)
+                }}
+                style={{ position: 'absolute', bottom: 10, right: 10, opacity: 0.5 }}
+            >
+                Stats
             </button>
         </div>
     )

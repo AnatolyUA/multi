@@ -14,7 +14,6 @@ export const useStateWithStorage = <T>(key: string, defaultValue: T): [T, React.
 
     useEffect(() => {
         // storing input name
-        console.log('setting', key, value)
         storage.setItem(key, value)
     }, [key, value])
 

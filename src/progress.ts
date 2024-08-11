@@ -35,8 +35,32 @@ export function getRandomTask(progress: Progress): Task {
     const stats = progress.Stats
     const level = progress.Level
     const filtered = stats.filter((stat) => stat.task[0] <= level && stat.task[1] <= level)
-    const random = Math.floor(Math.random() * filtered.length)
-    return filtered[random].task
+
+    // Calculate weights based on inverse of score and tries
+    const weightedTasks = filtered.map((stat) => {
+        const scoreWeight = Math.max(1, 10 - stat.score) // Higher weight for lower scores
+        const triesWeight = Math.max(1, 10 - stat.tries) // Higher weight for fewer tries
+        const weight = scoreWeight * triesWeight
+        return { task: stat.task, weight }
+    })
+
+    // Calculate the sum of all weights
+    const totalWeight = weightedTasks.reduce((sum, task) => sum + task.weight, 0)
+
+    // Generate a random number between 0 and totalWeight
+    const random = Math.random() * totalWeight
+
+    // Use the random number to select a task
+    let cumulativeWeight = 0
+    for (const weightedTask of weightedTasks) {
+        cumulativeWeight += weightedTask.weight
+        if (random <= cumulativeWeight) {
+            return weightedTask.task
+        }
+    }
+
+    // Fallback to a random task if something goes wrong
+    return weightedTasks[Math.floor(Math.random() * weightedTasks.length)].task
 }
 
 export function updateStats(progress: Progress, task: Task, answer: number, time: number): Progress {
@@ -62,6 +86,7 @@ export function updateLevel(progress: Progress): Progress {
     const correct = filtered.filter((stat) => stat.score > 0)
     const total = filtered.length
     const ratio = correct.length / total
+    console.log('ratio', ratio)
     let level = progress.Level
     if (ratio > 0.9) {
         level++

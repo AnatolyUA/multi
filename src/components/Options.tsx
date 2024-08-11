@@ -28,16 +28,34 @@ function getOptions(task: Task): number[] {
     const [a, b] = task
     const correct = a * b
     const set = new Set<number>([correct])
-    set.add(correct + a)
-    set.add(correct + b)
-    if (correct > 10) {
-        set.add(correct - a)
-        set.add(correct - b)
+
+    // Add nearby products
+    set.add(a * (b + 1))
+    set.add(a * (b - 1))
+    set.add((a + 1) * b)
+    set.add((a - 1) * b)
+
+    // Add sum and difference if they're positive
+    if (a + b !== correct) set.add(a + b)
+    if (a - b > 0) set.add(a - b)
+    if (b - a > 0) set.add(b - a)
+
+    // Function to generate a random number within a range
+    const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
+
+    // Add random options until we have 8
+    while (set.size < 8) {
+        let randomOption
+        if (Math.random() < 0.5) {
+            // 50% chance: number close to correct answer
+            randomOption = randomInRange(Math.max(1, correct - 10), correct + 10)
+        } else {
+            // 50% chance: number within a wider range
+            randomOption = randomInRange(Math.max(1, Math.floor(correct / 2)), correct * 2)
+        }
+        set.add(randomOption)
     }
 
-    while (set.size < 8) {
-        set.add(Math.floor(Math.random() * correct * 2))
-    }
     const res = Array.from(set)
     shuffle(res)
     return res
